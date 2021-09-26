@@ -1,116 +1,88 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-struct EMPLOYEE
+#define MAXSIZE 3
+
+typedef struct
 {
-    int empid;
-    char name[20];
-    char dept[20];
-    int salary;
-    int age;
-}e;
+    char items[MAXSIZE][25];
+    int top;
+}STACK;
 
- void read_record(FILE *fp)
- {
-	 printf("\nEnter the Employee ID...\n");
-	 scanf("%d",&e.empid);
-	 printf("\nEnter the name...\n");
-	 scanf("%s",e.name);
-	 printf("\nEnter the department...\n");
-	 scanf("%s",e.dept);
-	 printf("\nEnter the salary...\n");
-	 scanf("%d",&e.salary);
-	 printf("\nEnter the age...\n");
-	 scanf("%d",&e.age);
-     fprintf(fp,"%d\t%s\t%s\t%d\t%d\n",e.empid,e.name,e.dept,e.salary,e.age);
-     printf("\nRecord saved successfully");
+int isfull(STACK s)
+{
+    if(s.top==MAXSIZE-1)
+        return 1;
+    return 0;
 }
- void print_record(FILE *fp)
- {
-     printf("ID\t\tNAME\t\tDEPT\t\tSalary\t\tAGE\n");
-     printf("----------------------------------------------------\n");
 
- while((fscanf(fp,"%d%s%s%d%d",&e.empid,e.name,e.dept,&e.salary,&e.age))!=EOF)
- printf("%d\t\t%s\t\t%s\t\t%d\t\t%d\n",e.empid,e.name,e.dept,e.salary,e.age);
+int isempty(STACK s)
+{
+    if(s.top==-1)
+        return 1;
+    return 0;
 
 }
 
- void search_record(FILE *fp)
- {
-	int flag=0;
-	char dept[20];
-
-	printf("\nEnter the dept to search: ");
-	scanf("%s",dept);
-
-while((fscanf(fp,"%d%s%s%d%d",&e.empid,e.name,e.dept,&e.salary,&e.age))!=EOF)
+void PUSH(STACK *s,char name[])
 {
-	if(strcmp(e.dept,dept)==0)
-	{
-	   if(flag==0)
-	    {
-	       printf("\nSEARCH SUCCESSFUL !!!");
-            printf("\nID\t\tNAME\t\tDEPT\t\tSalary\t\tAGE\n");
-            printf("--------------------------------------------\n");
-            flag=1;
-	    }
- printf("%d\t\t%s\t\t%s\t\t%d\t\t%d\n",e.empid,e.name,e.dept,e.salary,e.age);
-     }
- }
- if(flag==0)
-      printf("\nFAILURE,NO SUCH RECORD FOUND !!!");
- }
+    strcpy(s->items[++s->top],name);
+    printf("\n%s is pushed on to the stack",name);
+}
 
+
+char* POP(STACK *s)
+{
+    return(s->items[s->top--]);
+}
+
+void DISPLAY(STACK s)
+{
+    int i;
+    printf("\nSTACK CONTENTS:\nBOS->");
+    for(i=0;i<=s.top;i++)
+        printf("%s->",s.items[i]);
+     printf("TOS");
+}
 
 int main()
 {
-    FILE *fp;
+    STACK s;
     int choice;
-
+    char name[20];
+    s.top=-1;
     while(1)
     {
-
-      printf("\n\n1:Add_Record 2:Search_Record 3:Display\n4:Exit");
-      printf("\nEnter your choice: ");
-      scanf("%d",&choice);
-
-
-     switch(choice)
-    {
-          case 1:   fp=fopen("empfile","a");
-	              if(fp==NULL)
-	                   printf("\nError in opening file");
-	              else
-	              {
-                              read_record(fp);
-	                    fclose(fp);
-	              }
+        printf("\n\n1:PUSH\n2:POP\n3:Display\n4:Exit");
+        printf("\nEnter your choice: ");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+            case 1: if(isfull(s))
+                              printf("\nSTACK OVERFLOW");
+                        else
+                       {
+                              printf("\nEnter the name to be pushed: ");
+                              scanf("%s",name);
+                              PUSH(&s,name);
+                        }
                         break;
-
-          case 2:   fp=fopen("empfile","r");
-	              if(fp==NULL)
-	                  printf("\nError in opening file");
-	              else
-	              {
-                             search_record(fp);
-	                   fclose(fp);
-	              }
-	              break;
-
-          case 3:   fp=fopen("empfile","r");
-	              if(fp==NULL)
-	                   printf("\nNO RECORDS TO DISPLAY !!!");
-	               else
-	               {
-	                  print_record(fp);
-	                  fclose(fp);
-	               }
-                         break;
-
-          case 4: exit(0);
-
-          default: printf("\nInvalid choice !!!");
-       }
+            case 2: if(isempty(s))
+                             printf("\nSTACK UNDERFLOW");
+                        else
+                             printf("\n%s is popped from Stack",POP(&s));
+                        break;
+            case 3: if(isempty(s))
+                             printf("\nSTACK EMPTY");
+                        else
+                             DISPLAY(s);
+                        break;
+            case 4:exit(0);
+            default: printf("\nInvalid choice");
+        }
     }
-   return 0;
- }
+    return 0;
+}
+
+
+
